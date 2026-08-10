@@ -9,6 +9,7 @@ const app = express();
 
 const authRouter = require('./routes/auth')
 const profileRouter = require("./routes/profile");
+const skillsRouter = require("./routes/skills");
 
 
 
@@ -20,6 +21,7 @@ const port = process.env.PORT || 3000
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
+app.use("/", skillsRouter);
 
 app.get('/', (req, res) => {
   res.send('API is running');

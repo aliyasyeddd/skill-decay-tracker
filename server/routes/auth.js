@@ -8,9 +8,7 @@ const authRouter = express.Router();
 
 
 authRouter.post("/register", async (req, res) => {
-
     try {
-
         //Check if the data is valid ---
         validateSignUpData(req);
 

@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 // userSchema defines the structure of the User documents in the MongoDB collection 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
     name: {
         type: String,
         required: true
@@ -12,7 +12,9 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        lowercase: true,
+        trim: true
     },
     password: {
         type: String,
@@ -37,7 +39,7 @@ userSchema.methods.getJWT = async function() {
 }
 
 userSchema.methods.comparePassword = async function (passwordInputByUser) {
-    
+
     const user = this;
     
     const hashedPassword = user.password;

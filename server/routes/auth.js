@@ -28,9 +28,7 @@ authRouter.post("/register", async (req, res) => {
         }
 
         // Hash the password before saving it to the database
-        const passwordHash = await bcrypt.hash(password, 10)
-
-        const user = new User({ name, email, password: passwordHash });
+        const user = new User({ name, email, password });
 
         const savedUser = await user.save();
 

@@ -26,7 +26,12 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        validate(value) {
+            if (!validator.isStrongPassword(value)) {
+                throw new Error("Enter a Strong Password: " + value);
+            }
+        },
     },
 },
     //timestamps option will add createdAt and updatedAt fields to the user document and 
@@ -35,6 +40,16 @@ const userSchema = new Schema({
         timestamps: true,
     }
 );
+
+// Pre-save middleware to hash the password before saving the user document to the database
+userSchema.pre('save', async function() {
+    const user = this;
+    
+    // only hash if the password field is new or has been changed
+    if (!user.isModified('password')) return;
+    
+    user.password = await bcrypt.hash(user.password, 10);
+});
 
 // jwt method generates a JWT token for the user using the user's _id and 
 // the secret key defined in the environment variables. The token is set to expire in 8 hours. 

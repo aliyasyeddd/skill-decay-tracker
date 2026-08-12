@@ -2,16 +2,27 @@ const validator = require("validator")
 
 const validateSignUpData = (req) => {
     const { name, email, password } = req.body
-    if (!name) {
+    if (!name || !name.trim()) {
         throw new Error("Enter your name")
-    } else if (!validator.isEmail(email)) {
+    } else if (!email || !validator.isEmail(email)) {
         throw new Error("Enter a valid email address")
     //checks: { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1, returnScore: false, pointsPerUnique: 1, pointsPerRepeat: 0.5, pointsForContainingLower: 10, pointsForContainingUpper: 10, pointsForContainingNumber: 10, pointsForContainingSymbol: 10 }
-    } else if (!validator.isStrongPassword(password)) {
+    } else if (!password || !validator.isStrongPassword(password)) {
         throw new Error("Enter a strong password with at least 8 characters, including 1 uppercase, 1 lowercase, 1 number, and 1 symbol")
     }
 }
 
+const validateLoginData = (req) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new Error("Email and password are required!");
+  }
+  if (!validator.isEmail(email)) {
+    throw new Error("Invalid email address!");
+  }
+};
+
 module.exports = {
-    validateSignUpData
+    validateSignUpData, 
+    validateLoginData
 };

@@ -8,7 +8,7 @@ const userAuth = async (req, res, next) => {
         //read the token from the request cookies and if the token is not present then throw an error
         const { token } = req.cookies;
         if (!token) {
-            return res.status(401).send("Please Login!");
+            return res.status(401).json({ message: "Please Login!" });
         }
 
         //verify the token and get the decoded object from the token

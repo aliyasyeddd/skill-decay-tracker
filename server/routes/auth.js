@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
-const { validateSignUpData } = require('../utils/signupDataValidator');
+const { validateSignUpData, validateLoginData } = require('../utils/authValidation');
 
 // Create a router for authentication-related routes
 const authRouter = express.Router();
@@ -27,6 +27,16 @@ authRouter.post("/register", async (req, res) => {
 
         const savedUser = await user.save();
 
+        //after signup the user will be automatically logged in and for that we need to generate a JWT token for the user and send it to the frontend in the cookie so
+        //that the frontend can use that token to authenticate the user in subsequent requests
+        //generating a JWT token for the  signed-up user
+        const token = await savedUser.getJWT();
+
+        //setting the token in the cookie with an expiry time of 8 hours (8 * 3600000 milliseconds)
+        res.cookie("token", token, {
+            expires: new Date(Date.now() + 8 * 3600000),
+        });
+
         res.json({ message: 'User registered successfully', name: savedUser.name, email: savedUser.email });
 
     } catch (error) {
@@ -36,6 +46,9 @@ authRouter.post("/register", async (req, res) => {
 
 authRouter.post("/login", async (req, res) => {
     try {
+        //Check if the data is valid and missing ---
+        validateLoginData(req);
+
         const { email, password } = req.body;
 
         //we need to check if the user exists in the database 

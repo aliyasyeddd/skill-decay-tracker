@@ -1,7 +1,7 @@
 const express = require("express");
 const skillsRouter = express.Router();
 const userAuth = require("../middleware/auth");
-const Skill = require("../models/skills");
+const Skill = require("../models/Skills");
 const { calculateRustiness } = require('../utils/calculateRustiness');
 
 skillsRouter.get("/skills", userAuth, async (req, res) => {

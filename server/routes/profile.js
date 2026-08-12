@@ -8,7 +8,7 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
         const user = req.user;
         res.json({ name: user.name, email: user.email, createdAt: user.createdAt });
     } catch (error) {
-        res.status(401).send("ERROR : " + err.message);
+        res.status(401).send("ERROR : " + error.message);
     }
 })
 

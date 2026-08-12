@@ -6,6 +6,13 @@ const { validateSignUpData, validateLoginData } = require('../utils/authValidati
 // Create a router for authentication-related routes
 const authRouter = express.Router();
 
+// Define cookie options for setting the JWT token in the cookie
+const COOKIE_OPTIONS = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+};
 
 authRouter.post("/register", async (req, res) => {
     try {
@@ -33,9 +40,7 @@ authRouter.post("/register", async (req, res) => {
         const token = await savedUser.getJWT();
 
         //setting the token in the cookie with an expiry time of 8 hours (8 * 3600000 milliseconds)
-        res.cookie("token", token, {
-            expires: new Date(Date.now() + 8 * 3600000),
-        });
+        res.cookie("token", token, COOKIE_OPTIONS);
 
         res.json({ message: 'User registered successfully', name: savedUser.name, email: savedUser.email });
 
@@ -63,12 +68,7 @@ authRouter.post("/login", async (req, res) => {
 
             const token = await user.getJWT()
 
-            res.cookie("token", token, {
-                httpOnly: true,
-                secure: true,        // only sent over HTTPS
-                sameSite: "strict",  // blocks CSRF attacks
-                expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            });
+            res.cookie("token", token, COOKIE_OPTIONS);
 
             res.json({ message: "login Successful", data: { name: user.name, emailId: user.email } });
 

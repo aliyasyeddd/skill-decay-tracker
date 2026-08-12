@@ -26,12 +26,7 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true,
-        validate(value) {
-            if (!validator.isStrongPassword(value)) {
-                throw new Error("Enter a Strong Password: " + value);
-            }
-        },
+        required: true
     },
 },
     //timestamps option will add createdAt and updatedAt fields to the user document and 

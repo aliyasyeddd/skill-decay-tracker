@@ -1,21 +1,25 @@
-import { getSkills } from "./api/skills";
-import { useEffect } from "react";
-import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Landing from "./pages/Landing";
+import Login from "./components/Login";
+import Dashboard from "./pages/Dashboard";
+import SignUp from "./components/SignUp";
+import SkillDetail from "./pages/SkillDetail";
+
+
 
 function App() {
-  useEffect(() => {
-    getSkills()
-      .then((data) => console.log(data))
-      .catch((err) => console.error(err));
-  }, []);
-
-  return (
-    <>
-      <div className="App">
-        <h1>Welcome to the App</h1>
-      </div>
-    </>
-  );
+  return(
+    <BrowserRouter basename="/">
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/skills/:id" element={<SkillDetail />} />
+      </Routes>
+    </BrowserRouter>
+  )
+  ;
 }
 
 export default App;

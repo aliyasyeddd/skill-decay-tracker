@@ -14,7 +14,7 @@ const COOKIE_OPTIONS = {
     expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 };
 
-authRouter.post("/register", async (req, res) => {
+authRouter.post("/signup", async (req, res) => {
     try {
         //Check if the data is valid ---
         validateSignUpData(req);
@@ -68,7 +68,10 @@ authRouter.post("/login", async (req, res) => {
 
             res.cookie("token", token, COOKIE_OPTIONS);
 
-            res.json({ message: "login Successful", data: { name: user.name, emailId: user.email } });
+            res.json({
+                message: "login Successful",
+                data: { name: user.name, email: user.email }
+            });
 
         } else {
             return res.status(401).json({ message: 'Invalid credentials' })
@@ -85,7 +88,7 @@ authRouter.post("/logout", (req, res) => {
     res.cookie("token", null, {
         expires: new Date(Date.now()),
     });
-    res.send("Logout successful");
+    res.json({ message: "Logout successful" });
 
 })
 

@@ -4,14 +4,15 @@ import axios from "axios";
 import { BACKEND_URL } from "../utils/constants";
 
 const Login = () => {
-  const [email, setEmail] = useState("raeesasyed@gmail.com");
-  const [password, setPassword] = useState("Raeesa@45");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
       await axios.post(
         `${BACKEND_URL}/login`,
@@ -21,6 +22,8 @@ const Login = () => {
       return navigate("/dashboard");
     } catch (err) {
       setError(err?.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 

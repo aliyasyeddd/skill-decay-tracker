@@ -1,0 +1,1 @@
+export const BACKEND_URL = "https://skill-decay-tracker-aufs.onrender.com";

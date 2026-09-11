@@ -19,13 +19,11 @@ app.use(cookieParser());
 
 //cors is a middleware which allows us to specify which frontend application can access our backend APIs and 
 //also allows us to specify whether the frontend application can send cookies or not
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    //when we set credentials to true it allows the frontend application to send cookies to the backend APIs
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: ["http://localhost:5173", "skill-decay-tracker-ochre.vercel.app"],
+  //when we set credentials to true it allows the frontend application to send cookies to the backend APIs
+  credentials: true,
+}));
 
 
 const port = process.env.PORT || 3000

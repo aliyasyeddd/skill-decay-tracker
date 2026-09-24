@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
-import { BACKEND_URL } from "../utils/constants";
+import api from "../utils/api";
+import { setToken } from "../utils/authToken";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,11 +14,8 @@ const Login = () => {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      await axios.post(
-        `${BACKEND_URL}/login`,
-        { email, password },
-        { withCredentials: true },
-      );
+      const res = await api.post("/login", { email, password });
+      setToken(res.data.token);
       return navigate("/dashboard");
     } catch (err) {
       setError(err?.response?.data?.message || "Something went wrong");
@@ -45,7 +42,6 @@ const Login = () => {
           </span>
         </nav>
 
-        {/* Card */}
         <section className="max-w-md mx-auto px-6 pt-8 pb-24">
           <div className="bg-white/90 backdrop-blur-sm border border-[#bde0fe]/40 rounded-3xl shadow-xl shadow-[#cdb4db]/10 px-8 py-10">
             <div className="text-center mb-8">

@@ -40,7 +40,7 @@ authRouter.post("/signup", async (req, res) => {
         //setting the token in the cookie with an expiry time of 8 hours (8 * 3600000 milliseconds)
         res.cookie("token", token, COOKIE_OPTIONS);
 
-        res.json({ message: 'User registered successfully', name: savedUser.name, email: savedUser.email });
+        res.json({ message: 'User registered successfully', token, name: savedUser.name, email: savedUser.email });
 
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -70,6 +70,7 @@ authRouter.post("/login", async (req, res) => {
 
             res.json({
                 message: "login Successful",
+                token,
                 data: { name: user.name, email: user.email }
             });
 

@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { BACKEND_URL } from "../utils/constants";
+import api from "../utils/api";
 import SkillCard from "../components/SkillCard";
 import Logout from "../components/Logout";
 import Toast from "../components/Toast";
@@ -18,9 +17,7 @@ const Dashboard = () => {
 
   const loadSkills = async () => {
     try {
-      const res = await axios.get(`${BACKEND_URL}/skills/ranked`, {
-        withCredentials: true,
-      });
+      const res = await api.get("/skills/ranked");
       setSkills(res.data);
     } catch (err) {
       setError(err?.response?.data?.message || "Couldn't load your skills.");
@@ -34,11 +31,10 @@ const Dashboard = () => {
 
     setCreating(true);
     try {
-      await axios.post(
-        `${BACKEND_URL}/skills`,
-        { name: newName.trim(), category: newCategory.trim() },
-        { withCredentials: true },
-      );
+      await api.post("/skills", {
+        name: newName.trim(),
+        category: newCategory.trim(),
+      });
       setNewName("");
       setNewCategory("");
       setShowForm(false);
@@ -59,11 +55,7 @@ const Dashboard = () => {
       ),
     );
     try {
-      await axios.post(
-        `${BACKEND_URL}/skills/${skillId}/practice`,
-        {note},
-        { withCredentials: true },
-      );
+      await api.post(`/skills/${skillId}/practice`, { note });
       await loadSkills();
     } catch (error) {
       setError(
@@ -76,23 +68,16 @@ const Dashboard = () => {
 
   const handleDelete = async (skillId) => {
     try {
-      await axios.delete(`${BACKEND_URL}/skills/${skillId}`, {
-        withCredentials: true,
-      });
+      await api.delete(`/skills/${skillId}`);
       await loadSkills();
     } catch (error) {
-      setError(
-        error?.response?.data?.message || "Couldn't delete that skill.",
-      );
+      setError(error?.response?.data?.message || "Couldn't delete that skill.");
     }
-  }
+  };
 
   useEffect(() => {
     loadSkills();
   }, []);
-
-
-
 
   return (
     <div className="relative min-h-screen w-full bg-[#fffdfb] font-body text-[#2E2A28]">
@@ -111,7 +96,6 @@ const Dashboard = () => {
         </nav>
 
         <section className="max-w-5xl mx-auto px-6 pb-24">
-          {/* Header row */}
           <div className="flex items-center justify-between gap-4 mb-8 flex-wrap">
             <div>
               <h1 className="font-display font-bold text-3xl mb-1">
@@ -168,14 +152,12 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* Error banner */}
           {error && (
             <div className="mb-6 text-sm font-semibold text-[#a13f5c] bg-[#ffb6c1]/15 border border-[#ffb6c1]/40 rounded-xl px-4 py-3">
               {error}
             </div>
           )}
 
-          {/* Skill cards */}
           {loading ? (
             <p className="text-sm text-[#a8a29c] text-center py-16">
               Loading your skills...
@@ -196,7 +178,7 @@ const Dashboard = () => {
                   key={skill._id}
                   skill={skill}
                   onLogPractice={handleLogPractice}
-                   onDelete={handleDelete}
+                  onDelete={handleDelete}
                 />
               ))}
             </div>

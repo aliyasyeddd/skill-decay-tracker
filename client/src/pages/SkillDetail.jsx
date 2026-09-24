@@ -1,16 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { BACKEND_URL } from "../utils/constants";
+import api from "../utils/api";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { rustinessStyle } from "../utils/dashboardHelpers";
 
 const buildFrequencyData = (practiceLog) => {
@@ -63,16 +54,13 @@ const SkillDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Edit-in-place state for practice log entries
   const [editingEntryId, setEditingEntryId] = useState(null);
   const [editText, setEditText] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
 
   const loadSkill = async () => {
     try {
-      const res = await axios.get(`${BACKEND_URL}/skills/${id}`, {
-        withCredentials: true,
-      });
+      const res = await api.get(`/skills/${id}`);
       setSkill(res.data);
     } catch (err) {
       setError(err?.response?.data?.message || "Couldn't load that skill.");
@@ -85,7 +73,6 @@ const SkillDetail = () => {
     loadSkill();
   }, [id]);
 
-  
   const handleStartEdit = (entry) => {
     setEditingEntryId(entry._id);
     setEditText(entry.note || "");
@@ -99,11 +86,7 @@ const SkillDetail = () => {
   const handleSaveEdit = async (entryId) => {
     setSavingEdit(true);
     try {
-      await axios.put(
-        `${BACKEND_URL}/skills/${id}/practice/${entryId}`,
-        { note: editText },
-        { withCredentials: true },
-      );
+      await api.put(`/skills/${id}/practice/${entryId}`, { note: editText });
       setEditingEntryId(null);
       setEditText("");
       await loadSkill();
@@ -116,9 +99,7 @@ const SkillDetail = () => {
 
   const handleDeleteEntry = async (entryId) => {
     try {
-      await axios.delete(`${BACKEND_URL}/skills/${id}/practice/${entryId}`, {
-        withCredentials: true,
-      });
+      await api.delete(`/skills/${id}/practice/${entryId}`);
       await loadSkill();
     } catch (err) {
       setError(err?.response?.data?.message || "Couldn't delete that entry.");
@@ -164,28 +145,19 @@ const SkillDetail = () => {
 
           {skill && (
             <>
-              {/* Header */}
               <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
                 <div>
                   <h1 className="font-display font-bold text-3xl mb-1">{skill.name}</h1>
-                  {skill.category && (
-                    <p className="text-sm text-[#8a8480]">{skill.category}</p>
-                  )}
+                  {skill.category && <p className="text-sm text-[#8a8480]">{skill.category}</p>}
                 </div>
-                <span
-                  className={`text-sm font-bold px-3 py-1.5 rounded-full whitespace-nowrap ${style.badge}`}
-                >
+                <span className={`text-sm font-bold px-3 py-1.5 rounded-full whitespace-nowrap ${style.badge}`}>
                   {style.label}
                 </span>
               </div>
 
-              {/* Rustiness bar */}
               <div className="bg-white/90 border border-[#f1ece8] rounded-2xl p-5 mb-6 shadow-sm shadow-[#cdb4db]/10">
                 <div className="w-full h-2.5 rounded-full bg-[#f1ece8] overflow-hidden mb-2">
-                  <div
-                    className={`h-full rounded-full ${style.bar}`}
-                    style={{ width: `${percent}%` }}
-                  />
+                  <div className={`h-full rounded-full ${style.bar}`} style={{ width: `${percent}%` }} />
                 </div>
                 <p className="text-sm text-[#a8a29c]">
                   {percent}% rusty · {skill.practiceLog.length} practice{" "}
@@ -193,12 +165,9 @@ const SkillDetail = () => {
                 </p>
               </div>
 
-              {/* Practice frequency chart */}
               {frequencyData.length > 0 && (
                 <div className="bg-white/90 border border-[#f1ece8] rounded-2xl p-5 mb-8 shadow-sm shadow-[#cdb4db]/10">
-                  <h2 className="font-display font-bold text-lg mb-1">
-                    Practice frequency
-                  </h2>
+                  <h2 className="font-display font-bold text-lg mb-1">Practice frequency</h2>
                   <p className="text-xs text-[#a8a29c] mb-4">
                     Sessions per week — gaps show where practice lapsed.
                   </p>
@@ -206,27 +175,9 @@ const SkillDetail = () => {
                     <ResponsiveContainer>
                       <BarChart data={frequencyData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f1ece8" vertical={false} />
-                        <XAxis
-                          dataKey="week"
-                          tick={{ fontSize: 11, fill: "#a8a29c" }}
-                          axisLine={{ stroke: "#f1ece8" }}
-                          tickLine={false}
-                        />
-                        <YAxis
-                          allowDecimals={false}
-                          tick={{ fontSize: 11, fill: "#a8a29c" }}
-                          axisLine={{ stroke: "#f1ece8" }}
-                          tickLine={false}
-                          width={28}
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            borderRadius: 10,
-                            border: "1px solid #f1ece8",
-                            fontSize: 12,
-                          }}
-                          cursor={{ fill: "#ffe8ec" }}
-                        />
+                        <XAxis dataKey="week" tick={{ fontSize: 11, fill: "#a8a29c" }} axisLine={{ stroke: "#f1ece8" }} tickLine={false} />
+                        <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#a8a29c" }} axisLine={{ stroke: "#f1ece8" }} tickLine={false} width={28} />
+                        <Tooltip contentStyle={{ borderRadius: 10, border: "1px solid #f1ece8", fontSize: 12 }} cursor={false} />
                         <Bar dataKey="sessions" fill="#ffb6c1" radius={[6, 6, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -234,25 +185,18 @@ const SkillDetail = () => {
                 </div>
               )}
 
-              {/* Practice history — now editable/deletable per entry */}
               <h2 className="font-display font-bold text-xl mb-4">Practice history</h2>
 
               {sortedLog.length === 0 ? (
                 <div className="text-center py-12 bg-white/60 rounded-2xl border border-[#f1ece8]">
-                  <p className="text-sm text-[#8a8480]">
-                    No practice sessions logged yet.
-                  </p>
+                  <p className="text-sm text-[#8a8480]">No practice sessions logged yet.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {sortedLog.map((entry) => {
                     const isEditing = editingEntryId === entry._id;
-
                     return (
-                      <div
-                        key={entry._id}
-                        className="bg-white/90 border border-[#f1ece8] rounded-xl px-5 py-4"
-                      >
+                      <div key={entry._id} className="bg-white/90 border border-[#f1ece8] rounded-xl px-5 py-4">
                         <p className="text-xs font-bold text-[#a8a29c] mb-1">
                           {new Date(entry.date).toLocaleDateString(undefined, {
                             weekday: "short",

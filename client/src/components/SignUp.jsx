@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import { BACKEND_URL } from "../utils/constants";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../utils/api";
+import { setToken } from "../utils/authToken";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -14,11 +13,8 @@ const SignUp = () => {
 
   const handleSignUp = async () => {
     try {
-       await axios.post(
-        `${BACKEND_URL}/signup`,
-        { name, email, password },
-        { withCredentials: true },
-      );
+      const res = await api.post("/signup", { name, email, password });
+      setToken(res.data.token);
       return navigate("/dashboard");
     } catch (err) {
       setError(err?.response?.data?.message || "Something went wrong");
@@ -43,7 +39,6 @@ const SignUp = () => {
           </span>
         </nav>
 
-        {/* Card */}
         <section className="max-w-md mx-auto px-6 pt-8 pb-24">
           <div className="bg-white/90 backdrop-blur-sm border border-[#f1c0e8]/40 rounded-3xl shadow-xl shadow-[#cdb4db]/10 px-8 py-10">
             <div className="text-center mb-8">
